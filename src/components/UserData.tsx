@@ -3,7 +3,6 @@ import { apiUrl, Service } from "@hex-labs/core";
 import { SimpleGrid, Text, Button } from "@chakra-ui/react";
 import axios from "axios";
 import UserCard from "./UserCard";
-import { reverse } from "dns";
 
 const UserData: React.FC = () => {
 
