@@ -3,9 +3,10 @@ import {
   Flex,
   HStack,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import React from "react";
-
+import UserModal from "./UserModal";
 type Props = {
   user: any;
 };
@@ -24,8 +25,9 @@ type Props = {
 // and the /hexathons endpoint of the hexathons service to get a list of all the hexathons.
 
 const UserCard: React.FC<Props> = (props: Props) => {
-
+  const [showUserModal, setShowUserModal] = React.useState(false);
   return (
+    <>
     <Box
     borderWidth="1px"
     rounded="lg"
@@ -33,6 +35,7 @@ const UserCard: React.FC<Props> = (props: Props) => {
     height="175px"
     fontWeight="bold"
     alignItems="center"
+    onClick={() => setShowUserModal(true)}
     >
       <Flex padding="2" flexDirection="column">
         <HStack align="flex-end" justify="space-between">
@@ -44,10 +47,12 @@ const UserCard: React.FC<Props> = (props: Props) => {
           justifyContent="justify"
           mt="2"
         >
-          {props.user.email}
+          <Link color="blue" href={`mailto:${props.user.email}`}>{props.user.email}</Link>
         </Text>
       </Flex>
     </Box>
+    <UserModal showUserModal={showUserModal} onClose={() => setShowUserModal(false)} user={props.user} />
+    </>
   );
 };
 

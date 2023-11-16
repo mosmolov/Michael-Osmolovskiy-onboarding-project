@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { apiUrl, Service } from "@hex-labs/core";
-import { SimpleGrid, Text } from "@chakra-ui/react";
+import { SimpleGrid, Text, Button } from "@chakra-ui/react";
 import axios from "axios";
 import UserCard from "./UserCard";
+import { reverse } from "dns";
 
 const UserData: React.FC = () => {
 
@@ -20,28 +21,14 @@ const UserData: React.FC = () => {
 
   useEffect(() => {
 
-    // This is an example of an async function. The async keyword tells the
-    // function to wait for the axios request to finish before continuing. This
-    // is useful because we can't use the data from the request until it is
-    // finished.
-
     const getUsers = async () => {
 
-      // TODO: Use the apiUrl() function to make a request to the /users endpoint of our USERS service. The first argument is the URL
-      // of the request, which is created for the hexlabs api through our custom function apiUrl(), which builds the request URL based on
-      // the Service enum and the following specific endpoint URL.
-
-      // TODO: Also explore some of the other ways to configure the api call such as filtering and pagination.
-      // Try to filter all the users with phone numbers starting with 470 or increase the amount of users returned from the default 50 (don't go above 100).
-
-      // Postman will be your best friend here, because it's better to test out the API calls in Postman before implementing them here.
-
-      // this is the endpoint you want to hit, but don't just hit it directly using axios, use the apiUrl() function to make the request
       const URL = 'https://users.api.hexlabs.org/users/hexlabs';
+      const res = await axios.get(apiUrl(Service.USERS, URL));
+      let users = res.data;
+      users = users.filter((user: any) => user.phoneNumber?.startsWith('470'));
 
-      // uncomment the line below to test if you have successfully made the API call and retrieved the data. The below line takes
-      // the raw request response and extracts the actual data that we need from it.
-      // setUsers(data?.data?.profiles);
+      setUsers(users);
     };
     document.title = "Hexlabs Users"
     getUsers();
@@ -54,13 +41,25 @@ const UserData: React.FC = () => {
 
   // TODO: Create a function that sorts the users array based on the first name of the users. Then, create a button that
   // calls this function and sorts the users alphabetically by first name. You can use the built in sort() function to do this.
-
-
+  // You can also use the built in reverse() function to reverse the order of the array.
+  const sortFirstName = () => {
+    const sortedUsers = users.sort((a, b) => {
+      if (a.name.first < b.name.first) {
+        return -1;
+      }
+      if (a.name.first > b.name.first) {
+        return 1;
+      }
+      return 0;
+    }
+    )
+    setUsers((sortedUsers));
+  }
   return (
     <>
       <Text fontSize="4xl">Hexlabs Users</Text>
       <Text fontSize="2xl">This is an example of a page that makes an API call to the Hexlabs API to get a list of users.</Text>
-
+      <Button onClick={sortFirstName}>Sort by First Name</Button>
 
       <SimpleGrid columns={[2, 3, 5]} spacing={6} padding={10}>
 
@@ -68,7 +67,7 @@ const UserData: React.FC = () => {
         data of each unique user in our array. This is a really important concept that we use a lot so be sure to familiarize
         yourself with the syntax - compartmentalizing code makes your work so much more readable. */}
         { users.map((user) => (
-          <UserCard user={user} />
+          <UserCard user={user} key={user.userId} />
         ))}
 
       </SimpleGrid>

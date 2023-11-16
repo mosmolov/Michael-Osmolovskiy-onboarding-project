@@ -1,14 +1,13 @@
 /* eslint-disable */
 import React from "react";
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import axios from "axios";
 import { initializeApp } from "firebase/app";
 import { setPersistence, getAuth, inMemoryPersistence } from "firebase/auth";
 import { useLogin, LoadingScreen, AuthProvider } from "@hex-labs/core";
-
+import { Header, Footer, HeaderItem, apiUrl, Service } from "@hex-labs/core";
 import UserData from './components/UserData';
-
 // a little bee ascii art
 // const art =
 //   ".' '.                             buzz buzz\n.        .   .           (__\\ \n .         .         . -{{_(|8)\n   ' .  . ' ' .  . '     (__/";
@@ -31,6 +30,10 @@ export const App = () => {
   // Retrieves the user's login state. This hook will also make requests to log
   // the user in
   const [loading, loggedIn] = useLogin(app);
+  const logOut = async () => {
+    await axios.post(apiUrl(Service.AUTH, "/auth/logout"));
+    window.location.href = `https://login.hexlabs.org/login?redirect=${window.location.href}`;
+  };
 
   // If loading, show a loading screen
   if (loading) {
@@ -46,7 +49,17 @@ export const App = () => {
 
   // Sets up the AuthProvider so that any part of the application can use the
   // useAuth hook to retrieve the user's login details.
+  const rightHeaderItem = (
+    <Link to="/" onClick={logOut}>
+      <HeaderItem>Sign Out</HeaderItem>
+    </Link>
+  );
+ 
   return (
+    <>
+    <Header rightItem={rightHeaderItem}>
+      <HeaderItem><Link to="https://hexlabs.org/">Home</Link></HeaderItem>
+      </Header>
     <AuthProvider app={app}>
 
       {/* Setting up our React Router to route to all the different pages we may have */}
@@ -55,6 +68,8 @@ export const App = () => {
       </Routes>
 
     </AuthProvider>
+    <Footer />
+    </>
   );
 };
 
